@@ -55,9 +55,10 @@ class ExiftoolProcess extends EventEmitter {
      * @returns {Promise.<number>} A promise to spawn exiftool in stay_open
      * mode, resolved with pid.
      */
-    open(encoding, options) {
+    open(encoding, options, spawnArgs) {
         let _encoding = encoding
         let _options = options
+        let _spawnArgs = spawnArgs || [];
         // if encoding is not a string and options are not given, treat it as options
         if (options === undefined && typeof encoding !== 'string') {
             _encoding = undefined
@@ -67,7 +68,7 @@ class ExiftoolProcess extends EventEmitter {
         if (this._open) {
             return Promise.reject(new Error('Exiftool process is already open'))
         }
-        return lib.spawn(this._bin, _options)
+        return lib.spawn(this._bin, _options, _spawnArgs)
             .then((exiftoolProcess) => {
                 //console.log(`Started exiftool process %s`, process.pid);
                 this.emit(events.OPEN, exiftoolProcess.pid)
