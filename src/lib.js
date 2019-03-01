@@ -152,11 +152,20 @@ function isWritable(stream) {
  * Spawn exiftool.
  * @param {string} bin Path to the binary
  * @param {object} [options] options to pass to child_process.spawn method
+ * @param {array} additional arguments to pass to the exiftool binary when spawned
  * @returns {Promise.<ChildProcess>} A promise resolved with the process pointer, or rejected on error.
  */
-function spawn(bin, options) {
+function spawn(bin, options, exiftoolArgs) {
     const echoString = Date.now().toString()
-    const proc = cp.spawn(bin, ['-echo2', echoString, '-stay_open', 'True', '-@', '-'], options)
+    exiftoolArgs = (exiftoolArgs || []).concat([
+      '-echo2',
+      echoString,
+      '-stay_open',
+      'True',
+      '-@',
+      '-'
+    ]);
+    const proc = cp.spawn(bin, exiftoolArgs, options)
     if (!isReadable(proc.stderr)) {
         killProcess(proc)
         return Promise.reject(new Error('Process was not spawned with a readable stderr, check stdio options.'))
